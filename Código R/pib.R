@@ -1,4 +1,4 @@
-# Limpar
+# Limpar----
 
 rm(list=ls())
 
@@ -10,6 +10,8 @@ setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/F
 library(forecast) 
 library(dplyr)
 library(lattice)
+library(xtable)
+library(stargazer)
 
 # Exportando os dados disponíveis no GitHub
 
@@ -40,7 +42,7 @@ dev.copy(pdf,"pib2010.pdf")
 dev.off()
 
 
-# Aplicando a Suavização de Holt - Winters erros aditivos
+# Aplicando a Suavização de Holt - Winters erros aditivos----
 
 pib_hw<-hw(pib2010, level = 95, h=10, seasonal = "additive")
 
@@ -48,12 +50,12 @@ pib_hw<-hw(pib2010, level = 95, h=10, seasonal = "additive")
 plot(pib_hw)
 
 
-# Gerar uma nova série através da Suavização Exponencial Simples (SES)
+# Gerar uma nova série através da Suavização Exponencial de Holt-Winters (HW)
 pib_prev<- pib_hw[["model"]][["fitted"]]
 pib_prev<-data.frame(pib_prev)
 
 
-#Retirando os valores previstos da SES para fora da amostra
+#Retirando os valores previstos da SES para fora da amostra----
 
 x<-data.frame(pib_hw, row.names = c(1:10))
 x<-x %>% 
@@ -81,13 +83,84 @@ graf<-cbind(pib2010, pib_prev)
 colnames(graf)<-c("Série Original", "HW")
 
 
-# Retornando para o formato temporal
+# Retornando para o formato temporal----
 
 graf_ts<-ts(graf, start=c(2010,1), frequency = 12)
 
 
-# Plotar um único gráfico
+# Plotar um único gráfico----
 xyplot(graf_ts, superpose = TRUE, lwd = 2) 
 
 dev.copy(pdf,"pib.pdf")
 dev.off()
+
+
+#Encontrar os parâmetros estimados
+
+alpha<-round(pib_hw[["model"]][["par"]][["alpha"]], digits = 4)
+beta<-round(pib_hw[["model"]][["par"]][["beta"]], digits = 4)
+gamma<-round(pib_hw[["model"]][["par"]][["gamma"]], digits = 4)
+sigma<-round(sqrt(pib_hw[["model"]][["sigma2"]]), digits = 4)
+
+parametros<-data.frame(c(alpha, beta, gamma, sigma))
+colnames(parametros)<-c("Parâmetros estimados")
+rownames(parametros)<-c("alpha", "beta", "gamma", "sigma")
+
+# Estados Iniciais
+
+l<-round(pib_hw[["model"]][["par"]][["l"]])
+b<-round(pib_hw[["model"]][["par"]][["b"]])
+s0<-round(pib_hw[["model"]][["par"]][["s0"]])
+s1<-round(pib_hw[["model"]][["par"]][["s1"]])
+s2<-round(pib_hw[["model"]][["par"]][["s2"]])
+s3<-round(pib_hw[["model"]][["par"]][["s3"]])
+s4<-round(pib_hw[["model"]][["par"]][["s4"]])
+s5<-round(pib_hw[["model"]][["par"]][["s5"]])
+s6<-round(pib_hw[["model"]][["par"]][["s6"]])
+s7<-round(pib_hw[["model"]][["par"]][["s7"]])
+s8<-round(pib_hw[["model"]][["par"]][["s8"]])
+s9<-round(pib_hw[["model"]][["par"]][["s9"]])
+s10<-round(pib_hw[["model"]][["par"]][["s10"]])
+
+estado_inic<-data.frame(c(l, b, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10))
+colnames(estado_inic)<-c("Estados Iniciais utilizados")
+rownames(estado_inic)<-c("l", "b", "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", 
+                        "s9", "s10")
+
+
+#Critérios de informação
+
+loglik <- pib_hw[["model"]][["loglik"]]
+aic <- pib_hw[["model"]][["aic"]]
+bic <- pib_hw[["model"]][["bic"]]
+aicc <- pib_hw[["model"]][["aicc"]]
+mse <- pib_hw[["model"]][["mse"]]
+amse <- pib_hw[["model"]][["amse"]]
+
+inf_crit<-data.frame(c(loglik, aic, bic, aicc, mse, amse))
+colnames(inf_crit)<-c("Critérios de Informação")
+rownames(inf_crit)<-c("LogLik", "AIC", "BIC", "AICC", "MSE", "AMSE")
+
+
+# Gerar tabelas da Análise----
+
+
+print(xtable(estado_inic, caption = "Estados Iniciais utilizados na Previsão do Modelo HW", 
+             label = "tab2", digits = 0),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
+
+print(xtable(inf_crit, caption = "Critérios de Informação do Modelo de HW", 
+             label = "tab3"),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
+
+hw<-data.frame(pib_hw)
+print(xtable(hw, caption = "Previsão para o PIB através do Modelo de HW", 
+             label = "tab4"),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
+

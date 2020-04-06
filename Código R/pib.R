@@ -24,6 +24,10 @@ attach(dados)
 
 pib90 <-ts(pib, start=c(1990,1), frequency = 12)
 
+plot(pib90)
+
+dev.copy(pdf,"pib90.pdf")
+dev.off()
 
 # Fazendo um recorte de tempo nos dados a partir de 2000
 
@@ -32,23 +36,26 @@ pib2010<- window(pib90, start=2010)
 # Plotando o gráfico da série
 plot(pib2010)
 
-
-# Aplicando a Suavização de Holt
-
-pib_holt<-holt(pib2010, level = 95, h=10)
+dev.copy(pdf,"pib2010.pdf")
+dev.off()
 
 
-plot(pib_holt)
+# Aplicando a Suavização de Holt - Winters erros aditivos
+
+pib_hw<-hw(pib2010, level = 95, h=10, seasonal = "additive")
+
+
+plot(pib_hw)
 
 
 # Gerar uma nova série através da Suavização Exponencial Simples (SES)
-pib_prev<- pib_holt[["model"]][["fitted"]]
+pib_prev<- pib_hw[["model"]][["fitted"]]
 pib_prev<-data.frame(pib_prev)
 
 
 #Retirando os valores previstos da SES para fora da amostra
 
-x<-data.frame(pib_holt, row.names = c(1:10))
+x<-data.frame(pib_hw, row.names = c(1:10))
 x<-x %>% 
   select("Point.Forecast") %>% 
   rename("pib_prev"="Point.Forecast")
@@ -71,7 +78,7 @@ nulo<-nulo %>%
 pib2010<-bind_rows(pib2010, nulo)
 
 graf<-cbind(pib2010, pib_prev)
-colnames(graf)<-c("Série Original", "SEH")
+colnames(graf)<-c("Série Original", "HW")
 
 
 # Retornando para o formato temporal

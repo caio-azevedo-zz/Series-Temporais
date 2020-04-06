@@ -3,7 +3,7 @@
 rm(list=ls())
 
 #Diretório
-setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais")
+setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/Figuras")
 
 # Carregando pacotes a serem utilizados
 

@@ -82,7 +82,7 @@ graf_ts<-ts(graf, start=c(2010,1), frequency = 12)
 # Plotar um único gráfico
 xyplot(graf_ts, superpose = TRUE, lwd = 2) 
 
-dev.copy(pdf,"juros")
+dev.copy(pdf,"juros.pdf")
 dev.off()
 
 

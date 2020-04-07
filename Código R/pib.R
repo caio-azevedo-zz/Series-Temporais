@@ -97,35 +97,16 @@ dev.off()
 
 #Encontrar os parâmetros estimados
 
-alpha<-round(pib_hw[["model"]][["par"]][["alpha"]], digits = 4)
-beta<-round(pib_hw[["model"]][["par"]][["beta"]], digits = 4)
-gamma<-round(pib_hw[["model"]][["par"]][["gamma"]], digits = 4)
-sigma<-round(sqrt(pib_hw[["model"]][["sigma2"]]), digits = 4)
-
-parametros<-data.frame(c(alpha, beta, gamma, sigma))
+parametros<-data.frame(round(pib_hw[["model"]][["par"]], digits = 4))
+parametros<-data.frame(parametros[1:3,])
 colnames(parametros)<-c("Parâmetros estimados")
-rownames(parametros)<-c("alpha", "beta", "gamma", "sigma")
+rownames(parametros)<-c("alpha", "beta", "gamma")
 
 # Estados Iniciais
 
-l<-round(pib_hw[["model"]][["par"]][["l"]])
-b<-round(pib_hw[["model"]][["par"]][["b"]])
-s0<-round(pib_hw[["model"]][["par"]][["s0"]])
-s1<-round(pib_hw[["model"]][["par"]][["s1"]])
-s2<-round(pib_hw[["model"]][["par"]][["s2"]])
-s3<-round(pib_hw[["model"]][["par"]][["s3"]])
-s4<-round(pib_hw[["model"]][["par"]][["s4"]])
-s5<-round(pib_hw[["model"]][["par"]][["s5"]])
-s6<-round(pib_hw[["model"]][["par"]][["s6"]])
-s7<-round(pib_hw[["model"]][["par"]][["s7"]])
-s8<-round(pib_hw[["model"]][["par"]][["s8"]])
-s9<-round(pib_hw[["model"]][["par"]][["s9"]])
-s10<-round(pib_hw[["model"]][["par"]][["s10"]])
+estado_inic<-data.frame(round(pib_hw[["model"]][["initstate"]]))
+colnames(estado_inic)<-c("Estados Iniciais")
 
-estado_inic<-data.frame(c(l, b, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10))
-colnames(estado_inic)<-c("Estados Iniciais utilizados")
-rownames(estado_inic)<-c("l", "b", "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", 
-                        "s9", "s10")
 
 
 #Critérios de informação

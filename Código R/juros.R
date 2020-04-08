@@ -10,6 +10,7 @@ setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/F
 library(forecast) 
 library(dplyr)
 library(lattice)
+library(xtable)
 
 # Exportando os dados disponíveis no GitHub
 
@@ -123,8 +124,8 @@ print(xtable(inf_crit, caption = "Critérios de Informação da SEH",
 
 holt<-data.frame(pas_holt)
 print(xtable(holt, caption = "Previsão para a quantidade de passageiros embarcados
-             através do Modelo de Holt", 
-             label = "tab2.4"),
+             através do Modelo de Holt",
+             label = "tab2.4", digits = 0),
       caption.placement = "top",
       include.rownames = TRUE,
       format.args = list(big.mark = ".", decimal.mark = ","))

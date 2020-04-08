@@ -93,3 +93,38 @@ xyplot(graf_ts, superpose = TRUE, lwd = 2)
 
 dev.copy(pdf,"cons.pdf")
 dev.off()
+
+
+#Parâmetro estimado e estado inicial
+
+parametros<-data.frame(round(cons_ses[["model"]][["par"]], digits = 4))
+colnames(parametros)<-c("Parâmetros estimados")
+rownames(parametros)<-c("alpha", "L")
+
+#Critérios de informação
+
+loglik <- cons_ses[["model"]][["loglik"]]
+aic <- cons_ses[["model"]][["aic"]]
+bic <- cons_ses[["model"]][["bic"]]
+aicc <- cons_ses[["model"]][["aicc"]]
+mse <- cons_ses[["model"]][["mse"]]
+amse <- cons_ses[["model"]][["amse"]]
+
+inf_crit<-data.frame(c(loglik, aic, bic, aicc, mse, amse))
+colnames(inf_crit)<-c("Critérios de Informação")
+rownames(inf_crit)<-c("LogLik", "AIC", "BIC", "AICC", "MSE", "AMSE")
+
+
+print(xtable(inf_crit, caption = "Critérios de Informação da SES", 
+             label = "tab1.2"),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
+
+ses<-data.frame(cons_ses)
+print(xtable(ses, caption = "Previsão para o consumo de energia no Brasil (em Gwh)
+             através da SES",
+             label = "tab1.1", digits = 0),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))

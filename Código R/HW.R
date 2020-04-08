@@ -55,7 +55,7 @@ pib_prev<- pib_hw[["model"]][["fitted"]]
 pib_prev<-data.frame(pib_prev)
 
 
-#Retirando os valores previstos da SES para fora da amostra----
+#Retirando os valores previstos para fora da amostra----
 
 x<-data.frame(pib_hw, row.names = c(1:10))
 x<-x %>% 

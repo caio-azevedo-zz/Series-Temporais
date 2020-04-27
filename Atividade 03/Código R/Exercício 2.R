@@ -9,6 +9,8 @@ setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/A
 
 library(Quandl)
 library(dplyr)
+library(lattice)
+library(ggplot2)
 
 # Exportando os dados a partir do Quandl com uma chave de acesso
 
@@ -117,4 +119,44 @@ df<-left_join(df,bcb,c("ano"))
 plot(df, type="l", col="blue",xlab="Ano", ylab="Valor")
 
 dev.copy(pdf,"bcb_1211.pdf")
+dev.off()
+
+
+# Estatísticas Descritivas
+
+
+
+# Gráficos sobrepostos
+
+b_13522<- window(bcb_13522, start=2013, end=2019)
+b_24369<-window(bcb_24369, start=2013, end=2019)
+
+ex<-cbind(b_13522, b_24369)
+colnames(ex)<-c("BCB_13522","BCB_24369")
+
+xyplot(ex, superpose = TRUE, lwd=2, xlab = "Ano") 
+
+dev.copy(pdf,"sob.pdf")
+dev.off()
+
+
+# Gráfico dispersão
+
+ex1<-as.data.frame(ex)
+attach(ex1)
+
+#Configurando o layout do gráfico
+
+cleanup = theme(panel.grid.major = element_blank(),
+                panel.grid.minor = element_line(color = "white"),
+                panel.background = element_blank(),
+                axis.line = element_line(color = "black"),
+                axis.title = element_text(size = 14),
+                legend.text = element_text(size = 10),
+                 axis.text = element_text(size = 14))
+
+them
+qplot(BCB_13522, BCB_24369, data = ex1) + cleanup 
+
+dev.copy(pdf,"disp.pdf")
 dev.off()

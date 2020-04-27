@@ -14,7 +14,7 @@ library(xtable)
 
 # Exportando os dados disponíveis no GitHub
 
-site <- "https://raw.githubusercontent.com/caio-azevedo/Series-Temporais/master/data/passageiros_embarcados.csv"
+site <- "https://raw.githubusercontent.com/caio-azevedo/Series-Temporais/master/Atividade%2002/data/passageiros_embarcados.csv"
 
 dados<- read.table(site, header=T, sep=";", dec = ",", 
                    col.names = c("data", "pas", ""))

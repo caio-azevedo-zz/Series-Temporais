@@ -15,7 +15,7 @@ library(stargazer)
 
 # Exportando os dados disponíveis no GitHub
 
-site <- "https://raw.githubusercontent.com/caio-azevedo/Series-Temporais/master/data/energia.csv"
+site <- "https://raw.githubusercontent.com/caio-azevedo/Series-Temporais/master/Atividade%2002/data/energia.csv"
 
 dados<- read.table(site, header=T, sep=";", dec = ",", 
                    col.names = c("data", "cons", ""))

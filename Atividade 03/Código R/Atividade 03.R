@@ -10,6 +10,9 @@ setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/A
 library(forecast) 
 library(dplyr)
 library(urca)
+library(xtable)
+library(lmtest)
+library(stargazer)
 
 # Exportando os dados disponíveis no GitHub
 
@@ -61,10 +64,8 @@ ndiffs(pas69, test=c("adf"),type=c("trend"), lags=0)
 
 # Plotando os gráficos da série original e transformada lado-a-lado
 
-split.screen(figs=c(2,1))
-screen(1)
+par(mfrow=c(2,1))
 plot(pas69, col="blue", main="Série Original", bty="l",xlab="Ano", ylab="")
-screen(2)
 plot(dpas, col="blue", main="Série Defasada em um período", bty="l",xlab="Ano", ylab="")
 
 dev.copy(pdf,"pas.pdf")
@@ -73,10 +74,8 @@ dev.off()
 # Identificação do Modelo através dos Correlogramas
 
 
-split.screen(figs = c(2,1))
-screen(1)
+par(mfrow=c(2,1))
 acf(dpas, main="Função de Auto-Correlação", xlab="Defasagem", ylab="")
-screen(2)
 pacf(dpas, main="Função de Auto-Correlação Parcial", xlab="Defasagem", ylab="")
 
 dev.copy(pdf,"cor.pdf")
@@ -92,17 +91,28 @@ model_5<-arima(dpas, order = c(1,0,0))
 #Critério AIC
 #Pelo critério AIC model_5 foi escolhido, logo um MA(1)
 
-AIC(model_1, model_2, model_3, model_4, model_5)
-
+aic<-AIC(model_1, model_2, model_3, model_4, model_5)
 
 
 #Critério BIC
 # Igualmente ao critério AIC, o BIC sugeriu um MA(1)
 
-BIC(model_1, model_2, model_3, model_4, model_5)
+bic<-BIC(model_1, model_2, model_3, model_4, model_5)
 
 
+#Juntando os dois critérios e exportando em Latex
+inf<-cbind(aic, bic)
+
+print(xtable(inf, caption = "Critérios de Informação AIC e BIC",
+             label = "tabinf", digits = 2),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
 
 
+# Teste para os coeficientes estimados dos modelos
 
+stargazer(model_4,model_5, decimal.mark = ",", digit.separator = ".")
+
+stargazer(model_1,model_2,model_3, decimal.mark = ",", digit.separator = ".")
 

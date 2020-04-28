@@ -11,6 +11,8 @@ library(Quandl)
 library(dplyr)
 library(lattice)
 library(ggplot2)
+library(lubridate)
+library(xtable)
 
 # Exportando os dados a partir do Quandl com uma chave de acesso
 
@@ -21,9 +23,6 @@ bcb_1253<-Quandl("BCB/1253")
 bcb_7325<-Quandl("BCB/7325")
 bcb_13522<-Quandl("BCB/13522")
 bcb_24369<-Quandl("BCB/24369")
-
-
-
 
 #Exercício 2
 
@@ -155,8 +154,30 @@ cleanup = theme(panel.grid.major = element_blank(),
                 legend.text = element_text(size = 10),
                  axis.text = element_text(size = 14))
 
-them
 qplot(BCB_13522, BCB_24369, data = ex1) + cleanup 
 
 dev.copy(pdf,"disp.pdf")
 dev.off()
+
+
+# Estatísticas Descritivas
+
+sum_1211<-apply(bcb_1211,2,summary)
+sum_1253<-apply(bcb_1253,2,summary)
+sum_7325<-apply(bcb_7325,2,summary)
+sum_13522<-apply(bcb_13522,2,summary)
+sum_24369<-apply(bcb_24369,2,summary)
+
+sumario<-cbind(sum_1211, sum_1253, sum_7325, sum_13522, sum_24369)
+colnames(sumario)<-c("BCB/1211", "BCB/1253", "BCB/7325", "BCB/13522", "BCB/24369")
+
+#Removendo dados criados
+
+rm(sum_1211, sum_1253, sum_13522, sum_24369, sum_7325)
+
+# Exportando para Latex
+print(xtable(sumario, caption = "Sumário das Estatísticas Descritivas", 
+             label = "tab3", digits = 2),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))

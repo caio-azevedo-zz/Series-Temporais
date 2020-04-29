@@ -11,8 +11,10 @@ library(forecast)
 library(dplyr)
 library(urca)
 library(xtable)
-library(lmtest)
 library(stargazer)
+library(FinTS)
+library(normtest)
+
 
 # Exportando os dados disponíveis no GitHub
 
@@ -72,7 +74,7 @@ dev.copy(pdf,"pas.pdf")
 dev.off()
 
 # Identificação do Modelo através dos Correlogramas
-
+auto.arima(dpas)
 
 par(mfrow=c(2,1))
 acf(dpas, main="Função de Auto-Correlação", xlab="Defasagem", ylab="")
@@ -87,6 +89,7 @@ model_2<-arima(dpas, order = c(1,0,1))
 model_3<-arima(dpas, order = c(0,0,2)) 
 model_4<-arima(dpas, order = c(0,0,1)) 
 model_5<-arima(dpas, order = c(1,0,0)) 
+
 
 #Critério AIC
 #Pelo critério AIC model_5 foi escolhido, logo um MA(1)
@@ -116,3 +119,65 @@ stargazer(model_4,model_5, decimal.mark = ",", digit.separator = ".")
 
 stargazer(model_1,model_2,model_3, decimal.mark = ",", digit.separator = ".")
 
+
+# Diagnóstico
+
+tsdiag(model_5)
+
+dev.copy(pdf,"diag5.pdf")
+dev.off()
+
+tsdiag(model_4)
+
+dev.copy(pdf,"diag4.pdf")
+dev.off()
+
+
+# Teste de auto-correlação
+
+Box.test(model_5$residuals, lag=16,type="Ljung-Box", fitdf = 1)
+Box.test(model_4$residuals, lag=16,type="Ljung-Box", fitdf = 1)
+
+
+# Teste de heterocedasticidade condicional
+
+ArchTest(model_5$residuals, lags = 16)
+ArchTest(model_4$residuals, lags = 16)
+
+
+# Teste de normalidade
+
+jb.norm.test(model_5$residuals)
+jb.norm.test(model_4$residuals)
+
+
+# Gráfico kernel da densidade dos erros
+
+plot(density(model_5$residuals, kernel = c("gaussian")),
+     main="Densidade", xlab="", ylab="")
+
+dev.copy(pdf,"den5.pdf")
+dev.off()
+
+plot(density(model_4$residuals, kernel = c("gaussian")),
+     main="Densidade", xlab="", ylab="")
+
+dev.copy(pdf,"den4.pdf")
+dev.off()
+
+# Previsão
+plot(forecast(model_5, h=5, level=0.95))
+
+
+# Acurácia
+accuracy(model_5)
+accuracy(model_4)
+
+
+
+
+kurtosis(model_5$residuals)
+skewness(model_5$residuals)
+
+kurtosis(model_4$residuals)
+skewness(model_4$residuals)

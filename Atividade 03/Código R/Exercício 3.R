@@ -192,4 +192,11 @@ print(xtable(acuracia, caption = "Medidas de Acurácia",
       format.args = list(big.mark = ".", decimal.mark = ","))
 
 
+# Boxplot dos resíduos dos modelos estimados para verificar a existência de outliers
 
+par(mfrow=c(1,2))
+boxplot(model_5$residuals, main="Modelo AR(1)")
+boxplot(model_4$residuals, main="Modelo MA(1)")
+
+dev.copy(pdf,"boxplot.pdf")
+dev.off()

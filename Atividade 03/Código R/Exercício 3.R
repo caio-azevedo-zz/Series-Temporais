@@ -157,10 +157,10 @@ jb.norm.test(model_4$residuals)
 par(mfrow=c(2,1))
 
 plot(density(model_5$residuals, kernel = c("gaussian")),
-     main="Densidade dos resíduos Modelo AR(1)", xlab="", ylab="")
+     main="Modelo AR(1)", xlab="", ylab="")
 
 plot(density(model_4$residuals, kernel = c("gaussian")),
-     main="Densidade dos resíduos Modelo MA(1)", xlab="", ylab="")
+     main="Modelo MA(1)", xlab="", ylab="")
 
 dev.copy(pdf,"den5.pdf")
 dev.off()
@@ -170,18 +170,26 @@ dev.off()
 
 
 # Previsão
-plot(forecast(model_5, h=5, level=0.95))
+par(mfrow=c(2,1))
+plot(forecast(model_5, h=5, level=0.95),main="Modelo AR(1)", xlab="Ano", ylab="")
+plot(forecast(model_4, h=5, level=0.95),main="Modelo MA(1)", xlab="Ano", ylab="")
 
+dev.copy(pdf,"prev.pdf")
+dev.off()
 
 # Acurácia
 accuracy(model_5)
 accuracy(model_4)
 
+acuracia<-rbind(accuracy(model_5),accuracy(model_4))
+rownames(acuracia)<-c("AR(1)", "MA(1)")
+
+print(xtable(acuracia, caption = "Medidas de Acurácia",
+             label = "tabacur", digits = 4),
+      caption.placement = "top",
+      include.rownames = TRUE,
+      include.colnames = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ","))
 
 
 
-kurtosis(model_5$residuals)
-skewness(model_5$residuals)
-
-kurtosis(model_4$residuals)
-skewness(model_4$residuals)

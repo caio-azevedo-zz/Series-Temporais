@@ -122,6 +122,7 @@ stargazer(model_1,model_2,model_3, decimal.mark = ",", digit.separator = ".")
 
 # Diagnóstico
 
+
 tsdiag(model_5)
 
 dev.copy(pdf,"diag5.pdf")
@@ -153,17 +154,20 @@ jb.norm.test(model_4$residuals)
 
 # Gráfico kernel da densidade dos erros
 
+par(mfrow=c(2,1))
+
 plot(density(model_5$residuals, kernel = c("gaussian")),
-     main="Densidade", xlab="", ylab="")
+     main="Densidade dos resíduos Modelo AR(1)", xlab="", ylab="")
+
+plot(density(model_4$residuals, kernel = c("gaussian")),
+     main="Densidade dos resíduos Modelo MA(1)", xlab="", ylab="")
 
 dev.copy(pdf,"den5.pdf")
 dev.off()
 
-plot(density(model_4$residuals, kernel = c("gaussian")),
-     main="Densidade", xlab="", ylab="")
 
-dev.copy(pdf,"den4.pdf")
-dev.off()
+
+
 
 # Previsão
 plot(forecast(model_5, h=5, level=0.95))

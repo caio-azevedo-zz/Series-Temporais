@@ -74,7 +74,7 @@ dev.copy(pdf,"pas.pdf")
 dev.off()
 
 # Identificação do Modelo através dos Correlogramas
-auto.arima(dpas)
+
 
 par(mfrow=c(2,1))
 acf(dpas, main="Função de Auto-Correlação", xlab="Defasagem", ylab="")

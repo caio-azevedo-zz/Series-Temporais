@@ -56,7 +56,7 @@ dpas<-diff(pas69)
 # Refazendo teste de raiz unitária (Dicker-Fuller) para a série diferenciada
 # lags = 0 significa que não estamos fazendo o teste ADF
 
-df<-ur.df(dpas, type = c("trend"), lags = 0)
+df<-ur.df(diff(pas69), type = c("trend"), lags = 0)
 summary(df)
 
 # Essa função indica quantas diferenças são necessárias para que a série se torne estacionária
@@ -68,7 +68,7 @@ ndiffs(pas69, test=c("adf"),type=c("trend"), lags=0)
 
 par(mfrow=c(2,1))
 plot(pas69, col="blue", main="Série Original", bty="l",xlab="Ano", ylab="")
-plot(dpas, col="blue", main="Série Defasada em um período", bty="l",xlab="Ano", ylab="")
+plot(diff(pas69), col="blue", main="Série Defasada em um período", bty="l",xlab="Ano", ylab="")
 
 dev.copy(pdf,"pas.pdf")
 dev.off()
@@ -77,18 +77,18 @@ dev.off()
 
 
 par(mfrow=c(2,1))
-acf(dpas, main="Função de Auto-Correlação", xlab="Defasagem", ylab="")
-pacf(dpas, main="Função de Auto-Correlação Parcial", xlab="Defasagem", ylab="")
+acf(diff(pas69), main="Função de Auto-Correlação", xlab="Defasagem", ylab="")
+pacf(diff(pas69), main="Função de Auto-Correlação Parcial", xlab="Defasagem", ylab="")
 
 dev.copy(pdf,"cor.pdf")
 dev.off()
 
 # Escolher a ordem do modelo em c(p,d,q)
-model_1<-arima(dpas, order = c(1,0,2)) 
-model_2<-arima(dpas, order = c(1,0,1)) 
-model_3<-arima(dpas, order = c(0,0,2)) 
-model_4<-arima(dpas, order = c(0,0,1)) 
-model_5<-arima(dpas, order = c(1,0,0)) 
+model_1<-arima(pas69, order = c(1,1,2)) 
+model_2<-arima(pas69, order = c(1,1,1)) 
+model_3<-arima(pas69, order = c(0,1,2)) 
+model_4<-arima(pas69, order = c(0,1,1)) 
+model_5<-arima(pas69, order = c(1,1,0)) 
 
 
 #Critério AIC
@@ -137,13 +137,13 @@ dev.off()
 # Teste de auto-correlação
 
 Box.test(model_5$residuals, lag=16,type="Ljung-Box", fitdf = 1)
-Box.test(model_4$residuals, lag=16,type="Ljung-Box", fitdf = 1)
+Box.test(model_4$residuals, lag=2,type="Ljung-Box", fitdf = 1)
 
 
 # Teste de heterocedasticidade condicional
 
 ArchTest(model_5$residuals, lags = 16)
-ArchTest(model_4$residuals, lags = 16)
+ArchTest(model_4$residuals, lags = 2)
 
 
 # Teste de normalidade
@@ -157,10 +157,10 @@ jb.norm.test(model_4$residuals)
 par(mfrow=c(2,1))
 
 plot(density(model_5$residuals, kernel = c("gaussian")),
-     main="Modelo AR(1)", xlab="", ylab="")
+     main="Modelo ARIMA(1,1,0)", xlab="", ylab="")
 
 plot(density(model_4$residuals, kernel = c("gaussian")),
-     main="Modelo MA(1)", xlab="", ylab="")
+     main="Modelo ARIMA(0,1,1)", xlab="", ylab="")
 
 dev.copy(pdf,"den5.pdf")
 dev.off()
@@ -171,8 +171,8 @@ dev.off()
 
 # Previsão
 par(mfrow=c(2,1))
-plot(forecast(model_5, h=5, level=0.95),main="Modelo AR(1)", xlab="Ano", ylab="")
-plot(forecast(model_4, h=5, level=0.95),main="Modelo MA(1)", xlab="Ano", ylab="")
+plot(forecast(model_5, h=5, level=0.95),main="Modelo ARIMA(1,1,0)", xlab="Ano", ylab="")
+plot(forecast(model_4, h=5, level=0.95),main="Modelo ARIMA(0,1,1)", xlab="Ano", ylab="")
 
 dev.copy(pdf,"prev.pdf")
 dev.off()
@@ -182,7 +182,7 @@ accuracy(model_5)
 accuracy(model_4)
 
 acuracia<-rbind(accuracy(model_5),accuracy(model_4))
-rownames(acuracia)<-c("AR(1)", "MA(1)")
+rownames(acuracia)<-c("ARIMA(1,1,0)", "ARIMA(0,1,1)")
 
 print(xtable(acuracia, caption = "Medidas de Acurácia",
              label = "tabacur", digits = 4),
@@ -195,8 +195,8 @@ print(xtable(acuracia, caption = "Medidas de Acurácia",
 # Boxplot dos resíduos dos modelos estimados para verificar a existência de outliers
 
 par(mfrow=c(1,2))
-boxplot(model_5$residuals, main="Modelo AR(1)")
-boxplot(model_4$residuals, main="Modelo MA(1)")
+boxplot(model_5$residuals, main="Modelo ARIMA(1,1,0)")
+boxplot(model_4$residuals, main="Modelo ARIMA(0,1,1)")
 
 dev.copy(pdf,"boxplot.pdf")
 dev.off()

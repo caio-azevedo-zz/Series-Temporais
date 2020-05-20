@@ -16,7 +16,7 @@ library(xtable)
 
 # Exportando os dados a partir do Quandl com uma chave de acesso
 
-Quandl.api_key("1eFqgyJAPx3EFQL-7_xQ")
+Quandl.api_key(" ") # inserir uma chave válida
 
 bcb_1211<-Quandl("BCB/1211")
 bcb_1253<-Quandl("BCB/1253")

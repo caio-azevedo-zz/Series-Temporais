@@ -4,7 +4,7 @@ rm(list=ls())
 graphics.off()
 
 #Diretório
-#setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/Figuras")
+setwd("C:/Users/Caio Azevedo/Documents/Documentos Caio/Github/Series-Temporais/Atividade 05/Figuras")
 
 # Carregando pacotes a serem utilizados
 
@@ -15,7 +15,7 @@ library(urca)
 library(lmtest)
 library(normtest)
 library(FinTS)
-
+library(stargazer)
 
 # Exportando os dados disponíveis no GitHub
 
@@ -39,8 +39,12 @@ par(mfrow=c(2,1))
 plot(cars57, xlab="Ano", ylab="")
 plot(cars, xlab="Ano", ylab="")
 
+dev.copy(pdf,"serie.pdf")
+dev.off()
 
-plot(decompose(cars))
+plot(decompose(cars),xlab="Ano")
+dev.copy(pdf,"decompose.pdf")
+dev.off()
 
 #Detectando a presença de outliers
 outliers<-tsoutliers(cars)
@@ -60,6 +64,8 @@ S<-ordered(cycle(cars))
 cars.reg<-lm(cars~S)
 
 summary(cars.reg)
+
+stargazer(cars.reg, decimal.mark = ",", digit.separator = ".")
 
 
 # Criando as séries de cada mês
@@ -87,6 +93,9 @@ plot(Apr)
 plot(May)
 plot(Jun)
 
+dev.copy(pdf,"mes1.pdf")
+dev.off()
+
 par(mfrow=c(3,2))
 plot(Jul)
 plot(Aug)
@@ -95,6 +104,8 @@ plot(Oct)
 plot(Nov)
 plot(Dec)
 
+dev.copy(pdf,"mes2.pdf")
+dev.off()
 
 #Correlograma das séries por mês
 
@@ -106,6 +117,9 @@ Acf(Apr)
 Acf(May)
 Acf(Jun)
 
+dev.copy(pdf,"acf_mes1.pdf")
+dev.off()
+
 par(mfrow=c(3,2))
 Acf(Jul)
 Acf(Aug)
@@ -114,11 +128,17 @@ Acf(Oct)
 Acf(Nov)
 Acf(Dec)
 
+dev.copy(pdf,"acf_mes2.pdf")
+dev.off()
+
 #Correlogramas da série
+
 par(mfrow=c(2,1))
 Acf(cars, main="")
 Pacf(cars, main="")
 
+dev.copy(pdf,"correlograma.pdf")
+dev.off()
 
 # Teste de raiz unitária sazonal - Procedimento de HEGY
 teste_hegy<-hegy.test(cars, deterministic = c(1,1,1), lag.method = "fixed", maxlag = 1)
@@ -129,6 +149,7 @@ teste_hegy
 
 
 # Teste de Canova e Hansen
+
 
 ch.test(cars, type=c("dummy"))
 
@@ -144,7 +165,7 @@ summary(ur.df(cars, type = "drift", lags=14))
 
 # Teste de Philipps Perron
 
-summary(ur.pp(cars, type = "Z-tau", model = "constante", lags="long"))
+summary(ur.pp(cars, type = "Z-tau", model = "constant", lags="long"))
 
 
 
@@ -183,6 +204,9 @@ plot(Apr)
 plot(May)
 plot(Jun)
 
+dev.copy(pdf,"dmes1.pdf")
+dev.off()
+
 par(mfrow=c(3,2))
 plot(Jul)
 plot(Aug)
@@ -190,6 +214,9 @@ plot(Sep)
 plot(Oct)
 plot(Nov)
 plot(Dec)
+
+dev.copy(pdf,"dmes2.pdf")
+dev.off()
 
 #Correlograma das séries por mês
 
@@ -201,6 +228,9 @@ Acf(Apr)
 Acf(May)
 Acf(Jun)
 
+dev.copy(pdf,"acf_dmes1.pdf")
+dev.off()
+
 par(mfrow=c(3,2))
 Acf(Jul)
 Acf(Aug)
@@ -208,6 +238,10 @@ Acf(Sep)
 Acf(Oct)
 Acf(Nov)
 Acf(Dec)
+
+dev.copy(pdf,"acf_dmes2.pdf")
+dev.off()
+
 
 # Teste de Canova e Hansen para a série diferenciada
 
@@ -220,8 +254,12 @@ ch.test(diff(cars), type=c("dummy"))
 
 log(cars) %>% diff() %>% ggtsdisplay() 
 
+dev.copy(pdf,"log_serie.pdf")
+dev.off()
+
 fit<-Arima(log(cars), order=c(0,1,4), seasonal=c(2,0,2),
            fixed=c(NA,0,0,NA,NA,NA,0,NA))
+
 
 summary(fit)
 coeftest(fit)
@@ -229,17 +267,24 @@ coeftest(fit)
 #Diagnóstico dos resíduos
 
 checkresiduals(fit)
+
+dev.copy(pdf,"residuos.pdf")
+dev.off()
+
 tsdiag(fit)
+
+dev.copy(pdf,"diagnostico.pdf")
+dev.off()
 
 
 # Teste de auto-correlação
 
-Box.test(fit$residuals, lag=12,type="Ljung-Box", fitdf = 1)
+Box.test(fit$residuals, lag=16,type="Ljung-Box", fitdf = 1)
 
 
 # Teste de heterocedasticidade condicional
 
-ArchTest(fit$residuals, lags = 16)
+ArchTest(fit$residuals)
 
 
 # Teste de normalidade
@@ -256,11 +301,15 @@ graphics.off()
 plot(density(fit$residuals, kernel = c("gaussian")),
      main="Modelo SARIMA(0,1,4)(2,0,2)[12]", xlab="", ylab="")
 
+dev.copy(pdf,"densidade.pdf")
+dev.off()
 
 #Previsão
 
 fit %>% forecast(h=10) %>% autoplot()
 
+dev.copy(pdf,"forecast.pdf")
+dev.off()
 
 #Medidas de acurácia
 
@@ -284,5 +333,46 @@ legend('topleft',
        col=c('blue', 'red'), lty=1:1,
        bty='n')
 grid(col='darkgrey')
+
+dev.copy(pdf,"previsoes.pdf")
+dev.off()
+
+
+# Holt-Winters
+
+cars_hw<-hw(log(cars), level = 95, h=10, seasonal = "additive", initial = "optimal")
+accuracy(cars_hw)
+
+cars_hw %>% forecast(h=10) %>% autoplot()
+
+dev.copy(pdf,"forecast_hw.pdf")
+dev.off()
+
+par(mfrow=c(1,1))
+plot(log(cars),
+     main='',
+     xlab='Ano', ylab='',
+     col='blue',
+     bty='l')
+par(new=TRUE)
+plot(cars_hw$fitted,
+     axes=F, ann=F,
+     col='red',
+     bty='l')
+
+legend('topleft',
+       c('log(cars)', 'Fitted log(cars)'),
+       col=c('blue', 'red'), lty=1:1,
+       bty='n')
+grid(col='darkgrey')
+
+dev.copy(pdf,"previsoes_hw.pdf")
+dev.off()
+
+# Auto arima
+
+fit<-Arima(log(cars), order=c(2,1,0), seasonal=c(2,0,0))
+
+
 
 

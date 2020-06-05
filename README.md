@@ -1,5 +1,5 @@
 # Series-Temporais
-Repositório destinado aos arquivos da disciplina de Econometria de Séries Temporais
+Repositório destinado aos arquvivos para replicação em códigos em R das atividades propostas na disciplina de Econometria de Séries Temporais.
 
 Os assuntos de cada atividade estão dispostos da seguinte forma:
 
